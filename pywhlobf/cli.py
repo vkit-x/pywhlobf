@@ -25,6 +25,34 @@ def run(
     abi_tag=None,
     platform_tag=None,
 ):
+    '''
+    :param input_whl:
+        Path to the input wheel file.
+    :param output_folder:
+        Path to the output folder.
+    :param temp_folder:
+        Path to the root of temporary folder.
+    :param compiler_options:
+        If provided, should be a dict containing only the supported keys
+        of `Cython.Compiler.Options`, as shown in
+        `https://cython.readthedocs.io/en/latest/src/userguide/source_files_and_compilation.html#compiler-options`.
+        Example: --compiler_options='{"docstrings": False}'
+    :param cythonize_options:
+        If provided, should be a dict containing only the supported parameters
+        of `Cython.Build.cythonize, as shown in
+        `https://cython.readthedocs.io/en/latest/src/userguide/source_files_and_compilation.html#Cython.Build.cythonize`
+        and
+        `https://github.com/cython/cython/blob/9a761a637fce6a7b70735ae2248963d63e569e14/Cython/Compiler/Options.py#L566`
+        Example: --cythonize_options='{"compiler_directives": {"emit_code_comments": False}}'
+    :param processes:
+        The number of worker processes to use. All CPUs are used by default.
+    :param show_warning:
+        If set, show the build warnings.
+    :param abi_tag:
+        If set, hardcode the ABI tag within the output wheel filename to this one.
+    :param platform_tag:
+        If set, hardcode the platform tag within the output wheel filename to this one.
+    '''
     # Prep.
     logger.info(f'input_whl={input_whl}')
 

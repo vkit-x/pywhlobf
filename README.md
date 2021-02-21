@@ -8,7 +8,53 @@ pywhlobf obfuscates your wheel distribution by compiling python source file to s
 
 ```bash
 pip install pywhlobf
-pywhlobf /path/to/input.whl /path/to/output/folder
+
+pywhlobf -- --help
+<< OUTPUT
+NAME
+    pywhlobf
+
+SYNOPSIS
+    pywhlobf INPUT_WHL OUTPUT_FOLDER <flags>
+
+POSITIONAL ARGUMENTS
+    INPUT_WHL
+        Path to the input wheel file.
+    OUTPUT_FOLDER
+        Path to the output folder.
+
+FLAGS
+    --temp_folder=TEMP_FOLDER
+        Type: Optional[]
+        Default: None
+        Path to the root of temporary folder.
+    --compiler_options=COMPILER_OPTIONS
+        Type: Optional[]
+        Default: None
+        If provided, should be a dict containing only the supported keys of `Cython.Compiler.Options`, as shown in `https://cython.readthedocs.io/en/latest/src/userguide/source_files_and_compilation.html#compiler-options`. Example: --compiler_options='{"docstrings": False}'
+    --cythonize_options=CYTHONIZE_OPTIONS
+        Type: Optional[]
+        Default: None
+        If provided, should be a dict containing only the supported parameters of `Cython.Build.cythonize, as shown in `https://cython.readthedocs.io/en/latest/src/userguide/source_files_and_compilation.html#Cython.Build.cythonize` and `https://github.com/cython/cython/blob/9a761a637fce6a7b70735ae2248963d63e569e14/Cython/Compiler/Options.py#L566` Example: --cythonize_options='{"compiler_directives": {"emit_code_comments": False}}'
+    --processes=PROCESSES
+        Type: Optional[]
+        Default: None
+        The number of worker processes to use. All CPUs are used by default.
+    --show_warning=SHOW_WARNING
+        Default: False
+        If set, show the build warnings.
+    --abi_tag=ABI_TAG
+        Type: Optional[]
+        Default: None
+        If set, hardcode the ABI tag within the output wheel filename to this one.
+    --platform_tag=PLATFORM_TAG
+        Type: Optional[]
+        Default: None
+        If set, hardcode the platform tag within the output wheel filename to this one.
+
+NOTES
+    You can also use flags syntax for POSITIONAL ARGUMENTS
+OUTPUT
 ```
 
 Example:
