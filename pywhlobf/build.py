@@ -176,7 +176,7 @@ def proc_build_py_file_inplace(args):
     return build_py_file_inplace(py_file, compiler_options, cythonize_options)
 
 
-def build_build_py_files_inplace(
+def build_py_files_inplace(
     py_files,
     compiler_options=None,
     cythonize_options=None,
@@ -209,4 +209,4 @@ def debug():
     from pywhlobf.prep import locate_py_files
     py_files = locate_py_files(f'{pywhlobf_data}/prep/textwolf-0.9.0')
 
-    perfect_results, warning_results, error_results = build_build_py_files_inplace(py_files)
+    perfect_results, warning_results, error_results = build_py_files_inplace(py_files)
