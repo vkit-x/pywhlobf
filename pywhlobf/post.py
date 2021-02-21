@@ -1,9 +1,12 @@
 import sys
 from itertools import chain
+
 from wheel.bdist_wheel import (
     get_abi_tag,
     get_platform as get_platform_tag,
 )
+from wheel.wheelfile import WheelFile
+
 import iolite as io
 
 
@@ -60,6 +63,11 @@ def generate_whl_name(
     return '-'.join(components) + '.whl'
 
 
+def repack_whl(input_folder, output_whl):
+    with WheelFile(output_whl, 'w') as wf:
+        wf.write_files(input_folder)
+
+
 def debug():
     import os
     pywhlobf_data = os.getenv('PYWHLOBF_DATA')
@@ -68,4 +76,10 @@ def debug():
     src_files = remove_source_files(f'{pywhlobf_data}/prep/textwolf-0.9.0')
     print(src_files)
 
-    print(generate_whl_name(f'{pywhlobf_data}/prep/textwolf-0.9.0', 'textwolf', '0.9.0', None))
+    whl_name = generate_whl_name(f'{pywhlobf_data}/prep/textwolf-0.9.0', 'textwolf', '0.9.0', None)
+    print(whl_name)
+
+    repack_whl(
+        f'{pywhlobf_data}/prep/textwolf-0.9.0',
+        f'{pywhlobf_data}/prep/{whl_name}',
+    )
