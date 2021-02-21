@@ -10,6 +10,7 @@ pywhlobf obfuscates your wheel distribution by compiling python source file to s
 pip install pywhlobf
 
 pywhlobf -- --help
+
 << OUTPUT
 NAME
     pywhlobf
