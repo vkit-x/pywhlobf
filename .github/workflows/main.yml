@@ -50,7 +50,8 @@ jobs:
       - name: Install.
         run: |
           pip install .
-          which pywhlobf
+          ls -alh /opt/python/${{ matrix.python_abi }}/bin
+
       - name: Download example wheel file and test.
         run: |
           curl \
