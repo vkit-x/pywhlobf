@@ -27,7 +27,7 @@ jobs:
           - "quay.io/pypa/manylinux2014_x86_64"
           - "quay.io/pypa/manylinux2014_i686"
         python_abi:
-          # - "cp35-cp35m"
+          - "cp35-cp35m"
           - "cp36-cp36m"
           - "cp37-cp37m"
           - "cp38-cp38"
