@@ -1,0 +1,62 @@
+
+name: ci
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+
+  checkout:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Upload checkout
+        uses: actions/upload-artifact@v1
+        with:
+          name: checkout
+          path: .
+
+  simple-test:
+    needs: checkout
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        image:
+          - "quay.io/pypa/manylinux2014_x86_64"
+          - "quay.io/pypa/manylinux2014_i686"
+        python_abi:
+          - "cp35-cp35m"
+          - "cp36-cp36m"
+          - "cp37-cp37m"
+          - "cp38-cp38"
+    container:
+      image: ${{ matrix.image }}
+    steps:
+      - name: Download checkout
+        uses: actions/download-artifact@v1
+        with:
+          name: checkout
+          path: .
+      - name: Setup python/pip.
+        run: |
+          update-alternatives --install /usr/bin/python python /opt/python/${{ matrix.python_abi }}/bin/python 0
+          python --version
+
+          update-alternatives --install /usr/bin/pip pip /opt/python/${{ matrix.python_abi }}/bin/pip 0
+          pip install -U pip
+          pip --version
+      - name: Install.
+        run: |
+          pip install -e .
+      - name: Download example wheel file and test.
+          curl \
+            'https://files.pythonhosted.org/packages/65/63/39d04c74222770ed1589c0eaba06c05891801219272420b40311cd60c880/wheel-0.36.2-py2.py3-none-any.whl' \
+            --output 'wheel-0.36.2-py2.py3-none-any.whl'
+          pywhlobf wheel-0.36.2-py2.py3-none-any.whl ./tmp
+          if [ ! $? -eq 0 ] ; then
+            echo 'Failed'
+            exit 1
+          fi
+          cd ./tmp && find .
