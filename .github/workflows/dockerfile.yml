@@ -27,7 +27,7 @@ jobs:
           # - "manylinux2014_s390x"
     steps:
       - uses: actions/checkout@v2
-      - name: Upload checkout
+      - name: checkout
         uses: actions/upload-artifact@v1
         with:
           name: checkout
