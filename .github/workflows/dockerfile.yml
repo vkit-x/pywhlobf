@@ -43,9 +43,16 @@ jobs:
             -t pywhlobf/pywhlobf:"$TAG" \
             .
 
-          if [ "${{ github.event.inputs.publish }}" -eq 'yes' ] ; then
+          if [ "${{ github.event.inputs.publish }}" = 'yes' ] ; then
             docker login --username=pywhlobf --password=${{ secrets.DOCKER_PASSWORD }}
             docker push pywhlobf/pywhlobf:"$TAG"
+
+            docker login \
+              --username="${{ secrets.HUAWEICLOUD_AREA }}@${{ secrets.HUAWEICLOUD_AK }}" \
+              --password=${{ secrets.HUAWEICLOUD_TOKEN }} \
+              "swr.${{ secrets.HUAWEICLOUD_AREA }}.myhuaweicloud.com"
+            docker tag pywhlobf/pywhlobf:"$TAG" swr."${{ secrets.HUAWEICLOUD_AREA }}".myhuaweicloud.com/pywhlobf/pywhlobf:"$TAG"
+            docker push swr."${{ secrets.HUAWEICLOUD_AREA }}".myhuaweicloud.com/pywhlobf/pywhlobf:"$TAG"
           else
             echo 'not publish'
           fi
