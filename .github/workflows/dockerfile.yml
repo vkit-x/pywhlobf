@@ -44,7 +44,8 @@ jobs:
             .
 
           if [ "${{ github.event.inputs.publish }}" -eq 'yes' ] ; then
-            echo 'todo'
+            docker login --username=pywhlobf --password=${{ secrets.DOCKER_PASSWORD }}
+            docker push pywhlobf/pywhlobf:"$TAG"
           else
             echo 'not publish'
           fi
