@@ -2,6 +2,7 @@ import logging
 import tempfile
 import sys
 import shutil
+import os
 
 import iolite as io
 import fire
@@ -13,6 +14,9 @@ from pywhlobf.post import remove_source_files, generate_whl_name, repack_whl
 logging.basicConfig(format='[%(levelname)s] %(message)s', level='INFO')
 logger = logging.getLogger(__name__)
 
+PYWHLOBF_ABI_TAG = os.getenv('PYWHLOBF_ABI_TAG')
+PYWHLOBF_PLATFORM_TAG = os.getenv('PYWHLOBF_PLATFORM_TAG')
+
 
 def run(
     input_whl,
@@ -22,8 +26,8 @@ def run(
     cythonize_options=None,
     processes=None,
     show_warning=False,
-    abi_tag=None,
-    platform_tag=None,
+    abi_tag=PYWHLOBF_ABI_TAG,
+    platform_tag=PYWHLOBF_PLATFORM_TAG,
 ):
     '''
     :param input_whl:
