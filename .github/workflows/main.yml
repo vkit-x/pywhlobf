@@ -50,13 +50,12 @@ jobs:
       - name: Install.
         run: |
           pip install .
-          ls -alh /opt/python/${{ matrix.python_abi }}/bin
-
       - name: Download example wheel file and test.
         run: |
           curl \
             'https://files.pythonhosted.org/packages/65/63/39d04c74222770ed1589c0eaba06c05891801219272420b40311cd60c880/wheel-0.36.2-py2.py3-none-any.whl' \
             --output 'wheel-0.36.2-py2.py3-none-any.whl'
+          alias pywhlobf=/opt/python/${{ matrix.python_abi }}/bin/pywhlobf
           pywhlobf wheel-0.36.2-py2.py3-none-any.whl ./tmp
           if [ ! $? -eq 0 ] ; then
             echo 'Failed'
