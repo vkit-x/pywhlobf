@@ -16,11 +16,11 @@ NAME
     pywhlobf
 
 SYNOPSIS
-    pywhlobf INPUT_WHL OUTPUT_FOLDER <flags>
+    pywhlobf INPUT_WHL_OR_FOLDER OUTPUT_FOLDER <flags>
 
 POSITIONAL ARGUMENTS
-    INPUT_WHL
-        Path to the input wheel file.
+    INPUT_WHL_OR_FOLDER
+        Path to the input wheel file, or the folder containing wheel file(s).
     OUTPUT_FOLDER
         Path to the output folder.
 
