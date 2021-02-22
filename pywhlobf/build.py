@@ -7,11 +7,11 @@ import contextlib
 from io import StringIO
 import traceback
 import multiprocessing
+import pathlib
 
 from Cython.Compiler import Options
 from Cython.Compiler.Errors import CompileError
 from Cython.Build.Dependencies import cythonize
-import iolite as io
 
 
 def configure(compiler_options, cythonize_options):
@@ -106,7 +106,7 @@ def build_py_file_inplace(py_file, compiler_options, cythonize_options):
     os.chdir(base_fd)
 
     # Build c file.
-    temp_fd = io.folder(tempfile.mkdtemp(dir=base_fd), exists=True)
+    temp_fd = pathlib.Path(tempfile.mkdtemp(dir=base_fd))
 
     cythonize_failed = False
     cythonize_stdout = StringIO()

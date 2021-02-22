@@ -1,5 +1,6 @@
 import sys
 from itertools import chain
+import pathlib
 
 from wheel.bdist_wheel import (
     get_abi_tag,
@@ -7,11 +8,11 @@ from wheel.bdist_wheel import (
 )
 from wheel.wheelfile import WheelFile
 
-import iolite as io
-
 
 def remove_source_files(input_folder):
-    in_fd = io.folder(input_folder, exists=True)
+    in_fd = pathlib.Path(input_folder)
+    if not in_fd.is_dir():
+        raise RuntimeError(f'input_folder={input_folder} is not a folder.')
 
     src_files = list(
         chain(

@@ -3,8 +3,8 @@ import tempfile
 import sys
 import shutil
 import os
+import pathlib
 
-import iolite as io
 import fire
 
 from pywhlobf.prep import extract_tags, unzip_wheel, locate_py_files
@@ -65,7 +65,11 @@ def run(
 
     temp_root_fd = None
     if temp_folder:
-        temp_root_fd = io.folder(temp_folder, touch=True)
+        temp_root_fd = pathlib.Path(temp_folder)
+        if temp_root_fd.is_file():
+            logger.error(f'temp_folder={temp_folder} is a file.')
+            sys.exit(1)
+        os.makedirs(temp_root_fd, exist_ok=True)
 
     extract_folder = tempfile.mkdtemp(dir=temp_root_fd)
     logger.info(f'extract_folder={extract_folder}')
@@ -136,7 +140,12 @@ def run(
     )
     logger.info(f'output_whl_name={output_whl_name}')
 
-    out_fd = io.folder(output_folder, touch=True)
+    out_fd = pathlib.Path(output_folder)
+    if out_fd.is_file():
+        logger.error(f'output_folder={output_folder} is a file.')
+        sys.exit(1)
+    os.makedirs(out_fd, exist_ok=True)
+
     output_whl = out_fd / output_whl_name
     logger.info(f'output_whl={output_whl}')
 

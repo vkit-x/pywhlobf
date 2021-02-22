@@ -1,10 +1,13 @@
 import zipfile
-import iolite as io
+import pathlib
+import shutil
+import os
 
 
 def extract_tags(input_whl):
-    input_whl = io.file(input_whl, exists=True)
-
+    input_whl = pathlib.Path(input_whl)
+    if not input_whl.is_file():
+        raise RuntimeError(f'{input_whl} is not a file.')
     if input_whl.suffix != '.whl':
         raise RuntimeError(f'{input_whl} does not ends with ".whl".')
 
@@ -21,13 +24,22 @@ def extract_tags(input_whl):
 
 
 def unzip_wheel(input_whl, output_folder):
-    out_fd = io.folder(output_folder, reset=True)
+    out_fd = pathlib.Path(output_folder)
+    if out_fd.is_file():
+        raise RuntimeError(f'output_folder={output_folder} is a file')
+    if out_fd.is_dir():
+        shutil.rmtree(out_fd)
+    os.makedirs(out_fd)
+
     with zipfile.ZipFile(input_whl) as zip_file:
         zip_file.extractall(out_fd)
 
 
 def locate_py_files(input_folder):
-    in_fd = io.folder(input_folder, exists=True)
+    in_fd = pathlib.Path(input_folder)
+    if not in_fd.is_dir():
+        raise RuntimeError(f'input_folder={input_folder} is not a folder.')
+
     return list(in_fd.glob('**/*.py'))
 
 
