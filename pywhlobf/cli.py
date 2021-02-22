@@ -49,6 +49,9 @@ def run(
     unzip_wheel(input_whl, extract_folder)
 
     py_files = locate_py_files(extract_folder)
+    if not py_files:
+        logger.info('No python file to build, abort.')
+        return
 
     # Build.
     logger.info(
@@ -120,6 +123,12 @@ def run(
 
     output_whl = out_fd / output_whl_name
     logger.info(f'output_whl={output_whl}')
+
+    if output_whl.is_dir():
+        logger.warning(f'output_whl={output_whl} is a folder, removing...')
+        shutil.rmtree(output_whl)
+    elif output_whl.is_file():
+        logger.warning(f'output_whl={output_whl} exists, overwriting...')
 
     repack_whl(extract_folder, output_whl)
     logger.info('Done.')
