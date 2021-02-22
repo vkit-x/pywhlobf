@@ -23,9 +23,9 @@ RUN /usr/sbin/groupadd \
     --uid 1000 \
     --gid "$FIXUID_GROUP" \
     --shell /bin/bash \
-    "$FIXUID_USER"
-
-RUN USER="$FIXUID_USER" \
+    "$FIXUID_USER" \
+    && \
+    USER="$FIXUID_USER" \
     && \
     GROUP="$FIXUID_GROUP" \
     && \
@@ -44,4 +44,9 @@ RUN "$PYTHON_BIN"/pip install -U pip \
     && \
     "$PYTHON_BIN"/pip install pywhlobf=="$PYWHLOBF_VERSION"
 
-ENTRYPOINT fixuid -q "$PYTHON_BIN"/pywhlobf
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh \
+    && \
+    chmod 777 /entrypoint.sh
+
+ENTRYPOINT ["/entrypoint.sh"]
