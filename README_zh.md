@@ -1,16 +1,16 @@
-English | [简体中文](README_zh.md)
+[English](README.md) | 简体中文
 
 # pywhlobf
 
-## Overview
+## 简介
 
-pywhlobf obfuscates your wheel distribution by compiling python source file to shared library.
+pywhlobf 是一个 Python 代码混淆工具，输入为 [wheel 格式分发包](https://www.python.org/dev/peps/pep-0427/) (也就是说，您首先得执行如 `python -m build --wheel` 的命令将项目打成 wheel 包，然后才能使用本工具)，输出为混淆后的 wheel 包。包中所有的 `.py` Python 文件将会编译替换为目标平台的 `.so` 文件，从而达到混淆/保护代码的目的。
 
-## Usage
+## 使用方式
 
-### `manylinux` based docker images
+### 使用基于 `manylinux` 的 Docker 镜像
 
-Following images are based on [pypa/manylinux](https://github.com/pypa/manylinux) platforms, with the tagging format as `<pywhlobf_version>-<platform_tag>`. The full list can be found in [pywhlobf/tags](https://hub.docker.com/r/pywhlobf/pywhlobf/tags). If you want to obfuscate a wheel to support a different target platform, i.e. macOS or Windows platform, you should install `pywhlobf` from PyPI in the target platform and execute manually, as described in the next section.
+下列镜像基于 [pypa/manylinux](https://github.com/pypa/manylinux) 提供的基础镜像构建，镜像的标签格式为 `<pywhlobf_version>-<platform_tag>`。完整的镜像列表见 [pywhlobf/tags](https://hub.docker.com/r/pywhlobf/pywhlobf/tags)。如果您的运行环境不属于下列平台（如希望混淆后的包可以在 macOS 或 Windows 上执行），您需要在目标运行环境手动从 PyPI 安装 `pywhlobf`，具体见下一小节。
 
 * `pywhlobf/pywhlobf:0.1.2-manylinux1_x86_64`
 * `pywhlobf/pywhlobf:0.1.2-manylinux1_i686`
@@ -19,18 +19,18 @@ Following images are based on [pypa/manylinux](https://github.com/pypa/manylinux
 * `pywhlobf/pywhlobf:0.1.2-manylinux2014_x86_64`
 * `pywhlobf/pywhlobf:0.1.2-manylinux2014_i686`
 
-As a known issue, pulling from docker hub is intolerably slow for users in China. To speed up, simply add `swr.cn-east-3.myhuaweicloud.com/` prefix to names above, i.e. `docker pull swr.cn-east-3.myhuaweicloud.com/pywhlobf/pywhlobf:0.1.2-manylinux2014_x86_64`.
+众所周知，在中国大陆地区从 Docker Hub 拉镜像是无法忍受地慢。为了加速，可以简单地在镜像名前面加上 `swr.cn-east-3.myhuaweicloud.com/` 前缀，如 `docker pull swr.cn-east-3.myhuaweicloud.com/pywhlobf/pywhlobf:0.1.2-manylinux2014_x86_64`。
 
-To properly run the docker container, user should provide the following arguments to the `docker run` command:
+为了合理使用我们提供的镜像，您需要在执行 `docker run` 时提供如下参数：
 
-* `-e PYTHON_ABI_TAG=<some_tag>`: required. Indicating the supported Python & ABI tag. Should be one of `cp36-cp36m`, `cp37-cp37m`, `cp38-cp38`, `cp39-cp39`.
-* `--user "$(id -u):$(id -g)"`: required. This field will be used by [boxboat/fixuid](https://github.com/boxboat/fixuid) to make sure the permission of output files are correct.
-* `--rm -it`: optional but recommended. This options make sure the container is deleted on exit.
+* `-e PYTHON_ABI_TAG=<some_tag>`：必须提供。这个用于表示目标执行环境的 Python 版本与 ABI 标签。目前支持 `cp36-cp36m`, `cp37-cp37m`, `cp38-cp38`, `cp39-cp39`。
+* `--user "$(id -u):$(id -g)"`：必须提供。 [boxboat/fixuid](https://github.com/boxboat/fixuid) 会基于这个字段保证混淆后的文件的权限的正确性。
+* `--rm -it`：不必要但推荐使用。这个选项会保证容器会在退出后被自动删除。
 
-Example of usage:
+使用样例:
 
 ```bash
-# Show help doc.
+# 输出帮助文档。
 docker run \
   --rm -it \
   --user "$(id -u):$(id -g)" \
@@ -85,13 +85,13 @@ NOTES
     You can also use flags syntax for POSITIONAL ARGUMENTS
 OUTPUT
 
-# Download wheel-0.36.2-py2.py3-none-any.whl.
+# 下载 wheel-0.36.2-py2.py3-none-any.whl。
 curl \
   'https://files.pythonhosted.org/packages/65/63/39d04c74222770ed1589c0eaba06c05891801219272420b40311cd60c880/wheel-0.36.2-py2.py3-none-any.whl' \
   --output 'wheel-0.36.2-py2.py3-none-any.whl'
 
-# Obfuscate wheel-0.36.2-py2.py3-none-any.whl
-# NOTE: `-v "$(pwd)":/data` mounts the current working directory to /data within the container.
+# 混淆 wheel-0.36.2-py2.py3-none-any.whl
+# 注意：`-v "$(pwd)":/data` 会挂载当前工作路径至容器中的 /data 路径。
 docker run \
   --rm -it \
   --user "$(id -u):$(id -g)" \
@@ -172,14 +172,14 @@ Archive:  wheel-0.36.2-cp36-cp36m-manylinux2014_x86_64.whl
 OUTPUT
 ```
 
-### Install from PyPI
+### 从 PyPI 安装
 
 ```bash
 pip install pywhlobf
 pywhlobf -- --help
 ```
 
-Example:
+例子:
 
 ```bash
 pywhlobf wheel-0.36.2-py2.py3-none-any.whl ./tmp
