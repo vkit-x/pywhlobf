@@ -30,11 +30,11 @@ Example of usage:
 ```bash
 # Show help doc.
 docker run \
-	--rm -it \
-	--user "$(id -u):$(id -g)" \
-	-e PYTHON_ABI_TAG=cp36-cp36m \
-	pywhlobf/pywhlobf:0.1.2-manylinux2014_x86_64 \
-	--help
+  --rm -it \
+  --user "$(id -u):$(id -g)" \
+  -e PYTHON_ABI_TAG=cp36-cp36m \
+  pywhlobf/pywhlobf:0.1.2-manylinux2014_x86_64 \
+  --help
 
 << OUTPUT
 export HOME="/home/pywhlobf"
@@ -85,19 +85,19 @@ OUTPUT
 
 # Download wheel-0.36.2-py2.py3-none-any.whl.
 curl \
-	'https://files.pythonhosted.org/packages/65/63/39d04c74222770ed1589c0eaba06c05891801219272420b40311cd60c880/wheel-0.36.2-py2.py3-none-any.whl' \
-	--output 'wheel-0.36.2-py2.py3-none-any.whl'
+  'https://files.pythonhosted.org/packages/65/63/39d04c74222770ed1589c0eaba06c05891801219272420b40311cd60c880/wheel-0.36.2-py2.py3-none-any.whl' \
+  --output 'wheel-0.36.2-py2.py3-none-any.whl'
 
 # Obfuscate wheel-0.36.2-py2.py3-none-any.whl
 # NOTE: `-v "$(pwd)":/data` mounts the current working directory to /data within the container.
 docker run \
-	--rm -it \
-	--user "$(id -u):$(id -g)" \
-	-e PYTHON_ABI_TAG=cp36-cp36m \
-	-v "$(pwd)":/data \
-	pywhlobf/pywhlobf:0.1.2-manylinux2014_x86_64 \
-	'/data/wheel-0.36.2-py2.py3-none-any.whl' \
-	'/data/tmp'
+  --rm -it \
+  --user "$(id -u):$(id -g)" \
+  -e PYTHON_ABI_TAG=cp36-cp36m \
+  -v "$(pwd)":/data \
+  pywhlobf/pywhlobf:0.1.2-manylinux2014_x86_64 \
+  '/data/wheel-0.36.2-py2.py3-none-any.whl' \
+  '/data/tmp'
 
 << OUTPUT
 export HOME="/home/pywhlobf"
