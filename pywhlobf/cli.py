@@ -206,4 +206,5 @@ def batch_run(
     sys.exit(0)
 
 
-fire_batch_run = fire.Fire(batch_run)
+def fire_batch_run():
+    fire.Fire(batch_run)
