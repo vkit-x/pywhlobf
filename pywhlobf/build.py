@@ -206,7 +206,7 @@ def debug():
     pywhlobf_data = os.getenv('PYWHLOBF_DATA')
     assert pywhlobf_data
 
-    from pywhlobf.prep import locate_py_files
-    py_files = locate_py_files(f'{pywhlobf_data}/prep/textwolf-0.9.0')
+    import iolite as io
+    py_files = [io.file(f'{pywhlobf_data}/build/foo.py')]
 
     perfect_results, warning_results, error_results = build_py_files_inplace(py_files)
