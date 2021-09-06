@@ -27,7 +27,7 @@ RUN /usr/sbin/groupadd \
     && \
     GROUP="$FIXUID_GROUP" \
     && \
-    curl -SsL 'https://github.com/boxboat/fixuid/releases/download/v0.5/fixuid-0.5-linux-amd64.tar.gz' | tar -C /usr/local/bin -xzf - \
+    curl -SsL 'https://github.com/boxboat/fixuid/releases/download/v0.5.1/fixuid-0.5.1-linux-amd64.tar.gz' | tar -C /usr/local/bin -xzf - \
     && \
     chown root:root /usr/local/bin/fixuid \
     && \
