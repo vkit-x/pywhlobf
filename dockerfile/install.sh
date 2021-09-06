@@ -11,7 +11,7 @@ declare -a PYTHON_ABIS=(
     cp39-cp39
 )
 
-for PYTHON_ABI in $PYTHON_ABIS ; do
+for PYTHON_ABI in "${PYTHON_ABIS[@]}" ; do
     echo "Installing pywhlobf to ${PYTHON_ABI}."
     PIP_FILE="/opt/python/${PYTHON_ABI}/bin/pip"
     if [[ ! -f "$PIP_FILE" ]] ; then

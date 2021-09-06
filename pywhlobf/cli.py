@@ -177,7 +177,7 @@ def batch_run(
     '''
     input_path = pathlib.Path(input_whl_or_folder)
     if not input_path.exists():
-        logger.error(f'input_whl_or_folder={input_whl_or_folder} not exists.')
+        logger.error(f'input_whl_or_folder={input_whl_or_folder} doesn\'t exist.')
         sys.exit(1)
 
     if input_path.is_file():

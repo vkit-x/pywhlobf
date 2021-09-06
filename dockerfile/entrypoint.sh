@@ -13,7 +13,7 @@ fi
 
 PYWHLOBF="/opt/python/${PYTHON_ABI_TAG}/bin/pywhlobf"
 if [ ! -f "$PYWHLOBF" ] ; then
-    echo "PYWHLOBF=${PYWHLOBF} not exist, meaning PYTHON_ABI_TAG=${PYTHON_ABI_TAG} is not supported."
+    echo "PYWHLOBF=${PYWHLOBF} doesn't exist, hence PYTHON_ABI_TAG=${PYTHON_ABI_TAG} is not supported."
     exit 1
 fi
 echo "PYWHLOBF=${PYWHLOBF}"
