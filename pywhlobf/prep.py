@@ -19,6 +19,8 @@ def extract_tags(input_whl):
         distribution, version, _, _, _ = components
     elif len(components) == 6:
         distribution, version, build_tag, _, _, _ = components
+    else:
+        raise NotImplementedError()
 
     return distribution, version, build_tag
 

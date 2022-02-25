@@ -60,23 +60,39 @@ def build_py_file_inplace_output(
 
 
 def build_py_file_inplace(py_file, compiler_options, cythonize_options):
+    base_fd = py_file.parent
+    temp_fd = pathlib.Path(tempfile.mkdtemp(dir=base_fd))
+
     cythonize_options = configure(
         compiler_options=compiler_options,
         cythonize_options=cythonize_options,
     )
 
     # Compile python file to c file.
+    ext_modules = None
     compiler_failed = False
     compiler_stdout = StringIO()
     compiler_stderr = StringIO()
 
     with contextlib.redirect_stdout(compiler_stdout), contextlib.redirect_stderr(compiler_stderr):
+        # Backup py_file.
+        backup_py_file = temp_fd / py_file.name
+        backup_py_file.write_bytes(py_file.read_bytes())
+
+        # Inject py_file.
+        code = py_file.read_bytes()
+        py_file.write_bytes(b'# distutils: language=c++\n' + code)
+
+        # Codegen.
         try:
             ext_modules = cythonize(module_list=[str(py_file)], **cythonize_options)
         except CompileError:
             compiler_failed = True
             compiler_stderr.write('\nCatch CompileError:\n')
             compiler_stderr.write(traceback.format_exc())
+
+        # Restore py_file.
+        py_file.write_bytes(backup_py_file.read_bytes())
 
     compiler_stdout = compiler_stdout.getvalue()
     compiler_stderr = compiler_stderr.getvalue()
@@ -91,7 +107,6 @@ def build_py_file_inplace(py_file, compiler_options, cythonize_options):
         )
 
     # Move to non-package parent.
-    base_fd = py_file.parent
     while is_package_fd(base_fd) and not is_root_fd(base_fd):
         base_fd = base_fd.parent
     if is_root_fd(base_fd):
@@ -106,8 +121,6 @@ def build_py_file_inplace(py_file, compiler_options, cythonize_options):
     os.chdir(base_fd)
 
     # Build c file.
-    temp_fd = pathlib.Path(tempfile.mkdtemp(dir=base_fd))
-
     cythonize_failed = False
     cythonize_stdout = StringIO()
 
@@ -118,6 +131,7 @@ def build_py_file_inplace(py_file, compiler_options, cythonize_options):
 
     with contextlib.redirect_stdout(cythonize_stdout):
         try:
+            assert ext_modules is not None
             setup(
                 script_name='setup.py',
                 script_args=[
@@ -156,10 +170,12 @@ def build_py_file_inplace(py_file, compiler_options, cythonize_options):
     # Cleanup temp.
     shutil.rmtree(temp_fd)
 
-    # Cleanup c file.
-    c_file = py_file.with_suffix('.c')
-    assert c_file.is_file()
-    c_file.unlink()
+    # Cleanup C/C++ file.
+    for ext in ['.c', '.cpp']:
+        c_or_cpp_file = py_file.with_suffix(ext)
+        if c_or_cpp_file.exists():
+            assert c_or_cpp_file.is_file()
+            c_or_cpp_file.unlink()
 
     return build_py_file_inplace_output(
         py_file=py_file,
@@ -181,6 +197,7 @@ def build_py_files_inplace(
     compiler_options=None,
     cythonize_options=None,
     processes=None,
+    verbose=False,
 ):
     with multiprocessing.Pool(processes=processes) as pool:
         inputs = [(py_file, compiler_options, cythonize_options) for py_file in py_files]
@@ -198,6 +215,9 @@ def build_py_files_inplace(
             else:
                 perfect_results.append(result)
 
+            if verbose:
+                print(result)
+
         return perfect_results, warning_results, error_results
 
 
@@ -209,4 +229,4 @@ def debug():
     import iolite as io
     py_files = [io.file(f'{pywhlobf_data}/build/foo.py')]
 
-    perfect_results, warning_results, error_results = build_py_files_inplace(py_files)
+    perfect_results, warning_results, error_results = build_py_files_inplace(py_files, verbose=True)
