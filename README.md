@@ -12,16 +12,16 @@ pywhlobf obfuscates your wheel distribution by compiling python source file to s
 
 Following images are based on [pypa/manylinux](https://github.com/pypa/manylinux) platforms, with the tagging format as `<pywhlobf_version>-<platform_tag>`. The full list can be found in [pywhlobf/tags](https://hub.docker.com/r/pywhlobf/pywhlobf/tags). If you want to obfuscate a wheel to support a different target platform, i.e. macOS or Windows platform, you should install `pywhlobf` from PyPI in the target platform and execute manually, as described in the next section.
 
-* `pywhlobf/pywhlobf:0.1.4-manylinux1_x86_64`
-* `pywhlobf/pywhlobf:0.1.4-manylinux1_i686`
-* `pywhlobf/pywhlobf:0.1.4-manylinux2010_x86_64`
-* `pywhlobf/pywhlobf:0.1.4-manylinux2010_i686`
-* `pywhlobf/pywhlobf:0.1.4-manylinux2014_x86_64`
-* `pywhlobf/pywhlobf:0.1.4-manylinux2014_i686`
-* `pywhlobf/pywhlobf:0.1.4-manylinux_2_24_x86_64`
-* `pywhlobf/pywhlobf:0.1.4-manylinux_2_24_i686`
+* `pywhlobf/pywhlobf:0.2.0-manylinux1_x86_64`
+* `pywhlobf/pywhlobf:0.2.0-manylinux1_i686`
+* `pywhlobf/pywhlobf:0.2.0-manylinux2010_x86_64`
+* `pywhlobf/pywhlobf:0.2.0-manylinux2010_i686`
+* `pywhlobf/pywhlobf:0.2.0-manylinux2014_x86_64`
+* `pywhlobf/pywhlobf:0.2.0-manylinux2014_i686`
+* `pywhlobf/pywhlobf:0.2.0-manylinux_2_24_x86_64`
+* `pywhlobf/pywhlobf:0.2.0-manylinux_2_24_i686`
 
-As a known issue, pulling from docker hub is intolerably slow for users in China. To speed up, simply add `swr.cn-east-3.myhuaweicloud.com/` prefix to names above, i.e. `docker pull swr.cn-east-3.myhuaweicloud.com/pywhlobf/pywhlobf:0.1.4-manylinux2014_x86_64`.
+As a known issue, pulling from docker hub is intolerably slow for users in China. To speed up, simply add `swr.cn-east-3.myhuaweicloud.com/` prefix to names above, i.e. `docker pull swr.cn-east-3.myhuaweicloud.com/pywhlobf/pywhlobf:0.2.0-manylinux2014_x86_64`.
 
 To properly run the docker container, user should provide the following arguments to the `docker run` command:
 
@@ -37,7 +37,7 @@ docker run \
   --rm -it \
   --user "$(id -u):$(id -g)" \
   -e PYTHON_ABI_TAG=cp36-cp36m \
-  pywhlobf/pywhlobf:0.1.4-manylinux2014_x86_64 \
+  pywhlobf/pywhlobf:0.2.0-manylinux2014_x86_64 \
   --help
 
 << OUTPUT
@@ -99,7 +99,7 @@ docker run \
   --user "$(id -u):$(id -g)" \
   -e PYTHON_ABI_TAG=cp36-cp36m \
   -v "$(pwd)":/data \
-  pywhlobf/pywhlobf:0.1.4-manylinux2014_x86_64 \
+  pywhlobf/pywhlobf:0.2.0-manylinux2014_x86_64 \
   '/data/wheel-0.36.2-py2.py3-none-any.whl' \
   '/data/tmp'
 

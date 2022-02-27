@@ -8,6 +8,7 @@ from io import StringIO
 import traceback
 import multiprocessing
 import pathlib
+import re
 
 from Cython.Compiler import Options
 from Cython.Compiler.Errors import CompileError
@@ -60,23 +61,107 @@ def build_py_file_inplace_output(
 
 
 def build_py_file_inplace(py_file, compiler_options, cythonize_options):
+    base_fd = py_file.parent
+    temp_fd = pathlib.Path(tempfile.mkdtemp(dir=base_fd))
+
     cythonize_options = configure(
         compiler_options=compiler_options,
         cythonize_options=cythonize_options,
     )
 
     # Compile python file to c file.
+    ext_modules = None
     compiler_failed = False
     compiler_stdout = StringIO()
     compiler_stderr = StringIO()
 
     with contextlib.redirect_stdout(compiler_stdout), contextlib.redirect_stderr(compiler_stderr):
+        # Backup py_file.
+        backup_py_file = temp_fd / py_file.name
+        backup_py_file.write_bytes(py_file.read_bytes())
+
+        # Inject py_file.
+        code = py_file.read_bytes()
+        py_file.write_bytes(b'# distutils: language=c++\n' + code)
+
+        # Codegen.
         try:
             ext_modules = cythonize(module_list=[str(py_file)], **cythonize_options)
         except CompileError:
             compiler_failed = True
             compiler_stderr.write('\nCatch CompileError:\n')
             compiler_stderr.write(traceback.format_exc())
+
+        # Copy obfuscate.h.
+        include_fd = temp_fd / 'include'
+        include_fd.mkdir()
+        asset_fd = pathlib.Path(__file__).parent / 'asset'
+        assert asset_fd.is_dir()
+        for header_file in asset_fd.glob('*.h'):
+            (include_fd / header_file.name).write_bytes(header_file.read_bytes())
+
+        # Configure compiler.
+        assert ext_modules is not None
+        assert len(ext_modules) == 1
+        ext_module = ext_modules[0]
+        ext_module.include_dirs = [str(include_fd)]
+        ext_module.extra_compile_args = ['-std=c++14']
+
+        # Inject obfuscate.h and obsucate string literals.
+        cpp_file = py_file.parent / f'{py_file.stem}.cpp'
+        assert cpp_file.is_file()
+        code = cpp_file.read_text()
+
+        # Pattern 1.
+        pattern = r'^static const char (\w+)\[\] = \"(.*?)\";$'
+
+        var_names = []
+        for var_name, _ in re.findall(pattern, code, flags=re.MULTILINE):
+            var_names.append(var_name)
+
+        code = re.sub(
+            pattern,
+            '\n'.join([
+                r'static const char *\1 = AY_OBFUSCATE("\2");',
+                r'static const long __length\1 = HACK_LENGTH("\2");',
+            ]),
+            code,
+            flags=re.MULTILINE,
+        )
+        for var_name in var_names:
+            sizeof_pattern = r'sizeof\(' + var_name + r'\)'
+            code = re.sub(sizeof_pattern, f'__length{var_name}', code)
+
+        # Pattern 2.
+        pattern = r'^static char (\w+)\[\] = \"(.*?)\";$'
+
+        var_names = []
+        for var_name, _ in re.findall(pattern, code, flags=re.MULTILINE):
+            var_names.append(var_name)
+
+        code = re.sub(
+            pattern,
+            '\n'.join([
+                r'static char *\1 = AY_OBFUSCATE("\2");',
+                r'static const long __length\1 = HACK_LENGTH("\2");',
+            ]),
+            code,
+            flags=re.MULTILINE,
+        )
+        for var_name in var_names:
+            sizeof_pattern = r'sizeof\(' + var_name + r'\)'
+            code = re.sub(sizeof_pattern, f'__length{var_name}', code)
+
+        cpp_file.write_text(
+            '\n'.join([
+                '#include "obfuscate.h"',
+                '#include "obfuscate_sizeof.h"',
+                code,
+            ])
+        )
+
+        # Restore py_file.
+        py_file.write_bytes(backup_py_file.read_bytes())
 
     compiler_stdout = compiler_stdout.getvalue()
     compiler_stderr = compiler_stderr.getvalue()
@@ -91,7 +176,6 @@ def build_py_file_inplace(py_file, compiler_options, cythonize_options):
         )
 
     # Move to non-package parent.
-    base_fd = py_file.parent
     while is_package_fd(base_fd) and not is_root_fd(base_fd):
         base_fd = base_fd.parent
     if is_root_fd(base_fd):
@@ -106,8 +190,6 @@ def build_py_file_inplace(py_file, compiler_options, cythonize_options):
     os.chdir(base_fd)
 
     # Build c file.
-    temp_fd = pathlib.Path(tempfile.mkdtemp(dir=base_fd))
-
     cythonize_failed = False
     cythonize_stdout = StringIO()
 
@@ -156,10 +238,12 @@ def build_py_file_inplace(py_file, compiler_options, cythonize_options):
     # Cleanup temp.
     shutil.rmtree(temp_fd)
 
-    # Cleanup c file.
-    c_file = py_file.with_suffix('.c')
-    assert c_file.is_file()
-    c_file.unlink()
+    # Cleanup C/C++ file.
+    for ext in ['.c', '.cpp']:
+        c_or_cpp_file = py_file.with_suffix(ext)
+        if c_or_cpp_file.exists():
+            assert c_or_cpp_file.is_file()
+            c_or_cpp_file.unlink()
 
     return build_py_file_inplace_output(
         py_file=py_file,
@@ -181,6 +265,7 @@ def build_py_files_inplace(
     compiler_options=None,
     cythonize_options=None,
     processes=None,
+    verbose=False,
 ):
     with multiprocessing.Pool(processes=processes) as pool:
         inputs = [(py_file, compiler_options, cythonize_options) for py_file in py_files]
@@ -198,6 +283,9 @@ def build_py_files_inplace(
             else:
                 perfect_results.append(result)
 
+            if verbose:
+                print(result)
+
         return perfect_results, warning_results, error_results
 
 
@@ -209,4 +297,9 @@ def debug():
     import iolite as io
     py_files = [io.file(f'{pywhlobf_data}/build/foo.py')]
 
-    perfect_results, warning_results, error_results = build_py_files_inplace(py_files)
+    # perfect_results, warning_results, error_results = build_py_files_inplace(py_files, verbose=True)
+
+    ret = build_py_file_inplace(py_files[0], None, None)
+    print(ret['compiler_stdout'])
+    print(ret['cythonize_stdout'])
+    print(ret['cythonize_stderr'])
