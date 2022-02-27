@@ -112,6 +112,7 @@ def build_py_file_inplace(py_file, compiler_options, cythonize_options):
         assert cpp_file.is_file()
         code = cpp_file.read_text()
 
+        # Pattern 1.
         pattern = r'^static const char (\w+)\[\] = \"(.*?)\";$'
 
         var_names = []
@@ -122,6 +123,26 @@ def build_py_file_inplace(py_file, compiler_options, cythonize_options):
             pattern,
             '\n'.join([
                 r'static const char *\1 = AY_OBFUSCATE("\2");',
+                r'static const long __length\1 = HACK_LENGTH("\2");',
+            ]),
+            code,
+            flags=re.MULTILINE,
+        )
+        for var_name in var_names:
+            sizeof_pattern = r'sizeof\(' + var_name + r'\)'
+            code = re.sub(sizeof_pattern, f'__length{var_name}', code)
+
+        # Pattern 2.
+        pattern = r'^static char (\w+)\[\] = \"(.*?)\";$'
+
+        var_names = []
+        for var_name, _ in re.findall(pattern, code, flags=re.MULTILINE):
+            var_names.append(var_name)
+
+        code = re.sub(
+            pattern,
+            '\n'.join([
+                r'static char *\1 = AY_OBFUSCATE("\2");',
                 r'static const long __length\1 = HACK_LENGTH("\2");',
             ]),
             code,
