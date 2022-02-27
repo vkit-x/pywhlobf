@@ -95,9 +95,10 @@ def build_py_file_inplace(py_file, compiler_options, cythonize_options):
         # Copy obfuscate.h.
         include_fd = temp_fd / 'include'
         include_fd.mkdir()
-        obfuscate_h = pathlib.Path(__file__).parent / 'asset' / 'obfuscate.h'
-        assert obfuscate_h.is_file()
-        (include_fd / 'obfuscate.h').write_bytes(obfuscate_h.read_bytes())
+        asset_fd = pathlib.Path(__file__).parent / 'asset'
+        assert asset_fd.is_dir()
+        for header_file in asset_fd.glob('*.h'):
+            (include_fd / header_file.name).write_bytes(header_file.read_bytes())
 
         # Configure compiler.
         assert ext_modules is not None
@@ -110,13 +111,31 @@ def build_py_file_inplace(py_file, compiler_options, cythonize_options):
         cpp_file = py_file.parent / f'{py_file.stem}.cpp'
         assert cpp_file.is_file()
         code = cpp_file.read_text()
+
+        pattern = r'^static const char (\w+)\[\] = \"(.*?)\";$'
+
+        var_names = []
+        for var_name, _ in re.findall(pattern, code, flags=re.MULTILINE):
+            var_names.append(var_name)
+
         code = re.sub(
-            r'^static const char __(\w+)\[\] = \"(.*?)\";$',
-            r'static const char *__\1 = AY_OBFUSCATE("\2");',
+            pattern,
+            '\n'.join([
+                r'static const char *\1 = AY_OBFUSCATE("\2");',
+                r'static const long __length\1 = HACK_LENGTH("\2");',
+            ]),
             code,
             flags=re.MULTILINE,
         )
-        cpp_file.write_text('#include "obfuscate.h"\n' + code)
+        for var_name in var_names:
+            sizeof_pattern = r'sizeof\(' + var_name + r'\)'
+            code = re.sub(sizeof_pattern, f'__length{var_name}', code)
+
+        cpp_file.write_text('\n'.join([
+            '#include "obfuscate.h"',
+            '#include "obfuscate_sizeof.h"',
+            code,
+        ]))
 
         # Restore py_file.
         py_file.write_bytes(backup_py_file.read_bytes())
@@ -258,5 +277,6 @@ def debug():
     # perfect_results, warning_results, error_results = build_py_files_inplace(py_files, verbose=True)
 
     ret = build_py_file_inplace(py_files[0], None, None)
+    print(ret['compiler_stdout'])
     print(ret['cythonize_stdout'])
     print(ret['cythonize_stderr'])
