@@ -131,11 +131,13 @@ def build_py_file_inplace(py_file, compiler_options, cythonize_options):
             sizeof_pattern = r'sizeof\(' + var_name + r'\)'
             code = re.sub(sizeof_pattern, f'__length{var_name}', code)
 
-        cpp_file.write_text('\n'.join([
-            '#include "obfuscate.h"',
-            '#include "obfuscate_sizeof.h"',
-            code,
-        ]))
+        cpp_file.write_text(
+            '\n'.join([
+                '#include "obfuscate.h"',
+                '#include "obfuscate_sizeof.h"',
+                code,
+            ])
+        )
 
         # Restore py_file.
         py_file.write_bytes(backup_py_file.read_bytes())
