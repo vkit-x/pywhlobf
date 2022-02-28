@@ -59,6 +59,7 @@ jobs:
             pip install .'[cython3]'
           else
             exit 1
+          fi
       - name: Download example wheel file and test.
         run: |
           curl \

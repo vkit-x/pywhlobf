@@ -25,4 +25,5 @@ for PYTHON_ABI in "${PYTHON_ABIS[@]}" ; do
         "$PIP_FILE" install --no-cache-dir pywhlobf[cython3]=="$PYWHLOBF_VERSION"
     else
         exit 1
+    fi
 done

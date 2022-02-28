@@ -61,6 +61,7 @@ jobs:
             TAG="${{ github.event.inputs.pywhlobf_version }}-cython3-${{ matrix.platform_tag }}"
           else
             exit 1
+          fi
 
           docker build \
             --build-arg PLATFORM_TAG="${{ matrix.platform_tag }}" \
