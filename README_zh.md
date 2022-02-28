@@ -191,7 +191,7 @@ OUTPUT
 pip install pywhlobf
 
 # 或者，基于 Cython 3.0 prerelease
-pip install pywhlobf[cython3]
+pip install 'pywhlobf[cython3]'
 
 pywhlobf -- --help
 ```
