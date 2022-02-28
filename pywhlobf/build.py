@@ -6,7 +6,7 @@ import shutil
 import contextlib
 from io import StringIO
 import traceback
-import multiprocessing
+import concurrent.futures
 import pathlib
 import re
 
@@ -17,7 +17,6 @@ from Cython.Build.Dependencies import cythonize
 
 def configure(compiler_options, cythonize_options):
     if compiler_options is None:
-        # TODO: configure default compiler options.
         compiler_options = {}
 
     for key, val in compiler_options.items():
@@ -267,9 +266,9 @@ def build_py_files_inplace(
     processes=None,
     verbose=False,
 ):
-    with multiprocessing.Pool(processes=processes) as pool:
+    with concurrent.futures.ProcessPoolExecutor(max_workers=processes) as executor:
         inputs = [(py_file, compiler_options, cythonize_options) for py_file in py_files]
-        results = pool.imap_unordered(proc_build_py_file_inplace, inputs)
+        results = executor.map(proc_build_py_file_inplace, inputs)
 
         perfect_results = []
         warning_results = []
@@ -297,9 +296,9 @@ def debug():
     import iolite as io
     py_files = [io.file(f'{pywhlobf_data}/build/foo.py')]
 
-    # perfect_results, warning_results, error_results = build_py_files_inplace(py_files, verbose=True)
+    build_py_files_inplace(py_files, verbose=True)
 
-    ret = build_py_file_inplace(py_files[0], None, None)
-    print(ret['compiler_stdout'])
-    print(ret['cythonize_stdout'])
-    print(ret['cythonize_stderr'])
+    # ret = build_py_file_inplace(py_files[0], None, None)
+    # print(ret['compiler_stdout'])
+    # print(ret['cythonize_stdout'])
+    # print(ret['cythonize_stderr'])
