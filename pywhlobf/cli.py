@@ -92,7 +92,7 @@ def run(
                 logger.error(f'compiler_stderr={compiler_stderr}')
             if cythonize_stderr:
                 logger.error(f'cythonize_stderr={cythonize_stderr}')
-            logger.error('-' * 20)
+            logger.error('-' * 60)
         logger.error('Failed to build, abort.')
         sys.exit(1)
 

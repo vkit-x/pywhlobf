@@ -9,10 +9,13 @@ import traceback
 import concurrent.futures
 import pathlib
 import re
+import logging
 
 from Cython.Compiler import Options
 from Cython.Compiler.Errors import CompileError
 from Cython.Build.Dependencies import cythonize
+
+logger = logging.getLogger(__name__)
 
 
 def configure(compiler_options, cythonize_options):
@@ -70,10 +73,10 @@ def build_py_file_inplace(py_file, compiler_options, cythonize_options):
 
     # Compile python file to c file.
     ext_modules = None
+
     compiler_failed = False
     compiler_stdout = StringIO()
     compiler_stderr = StringIO()
-
     with contextlib.redirect_stdout(compiler_stdout), contextlib.redirect_stderr(compiler_stderr):
         # Backup py_file.
         backup_py_file = temp_fd / py_file.name
@@ -86,11 +89,29 @@ def build_py_file_inplace(py_file, compiler_options, cythonize_options):
         # Codegen.
         try:
             ext_modules = cythonize(module_list=[str(py_file)], **cythonize_options)
+            assert ext_modules is not None
+            assert len(ext_modules) == 1
         except CompileError:
             compiler_failed = True
             compiler_stderr.write('\nCatch CompileError:\n')
             compiler_stderr.write(traceback.format_exc())
 
+    compiler_stdout_p1 = compiler_stdout.getvalue()
+    compiler_stderr_p1 = compiler_stderr.getvalue()
+    if compiler_failed:
+        return build_py_file_inplace_output(
+            py_file=py_file,
+            status=False,
+            compiler_stdout=compiler_stdout_p1,
+            compiler_stderr=compiler_stderr_p1,
+            cythonize_stdout='',
+            cythonize_stderr='',
+        )
+
+    compiler_failed = False
+    compiler_stdout = StringIO()
+    compiler_stderr = StringIO()
+    with contextlib.redirect_stdout(compiler_stdout), contextlib.redirect_stderr(compiler_stderr):
         # Copy obfuscate.h.
         include_fd = temp_fd / 'include'
         include_fd.mkdir()
@@ -101,7 +122,6 @@ def build_py_file_inplace(py_file, compiler_options, cythonize_options):
 
         # Configure compiler.
         assert ext_modules is not None
-        assert len(ext_modules) == 1
         ext_module = ext_modules[0]
         ext_module.include_dirs = [str(include_fd)]
         ext_module.extra_compile_args = ['-std=c++14']
@@ -162,14 +182,18 @@ def build_py_file_inplace(py_file, compiler_options, cythonize_options):
         # Restore py_file.
         py_file.write_bytes(backup_py_file.read_bytes())
 
-    compiler_stdout = compiler_stdout.getvalue()
-    compiler_stderr = compiler_stderr.getvalue()
+    compiler_stdout_p2 = compiler_stdout.getvalue()
+    compiler_stderr_p2 = compiler_stderr.getvalue()
+
+    compiler_stdout_all = '\n'.join([compiler_stdout_p1, compiler_stdout_p2])
+    compiler_stderr_all = '\n'.join([compiler_stderr_p1, compiler_stderr_p2])
+
     if compiler_failed:
         return build_py_file_inplace_output(
             py_file=py_file,
             status=False,
-            compiler_stdout=compiler_stdout,
-            compiler_stderr=compiler_stderr,
+            compiler_stdout=compiler_stdout_all,
+            compiler_stderr=compiler_stderr_all,
             cythonize_stdout='',
             cythonize_stderr='',
         )
@@ -181,8 +205,8 @@ def build_py_file_inplace(py_file, compiler_options, cythonize_options):
         return build_py_file_inplace_output(
             py_file=py_file,
             status=False,
-            compiler_stdout=compiler_stdout,
-            compiler_stderr=compiler_stderr,
+            compiler_stdout=compiler_stdout_all,
+            compiler_stderr=compiler_stderr_all,
             cythonize_stdout='',
             cythonize_stderr='Base folder reach root.',
         )
@@ -228,8 +252,8 @@ def build_py_file_inplace(py_file, compiler_options, cythonize_options):
         return build_py_file_inplace_output(
             py_file=py_file,
             status=False,
-            compiler_stdout=compiler_stdout,
-            compiler_stderr=compiler_stderr,
+            compiler_stdout=compiler_stdout_all,
+            compiler_stderr=compiler_stderr_all,
             cythonize_stdout=cythonize_stdout,
             cythonize_stderr=cythonize_stderr,
         )
@@ -247,8 +271,8 @@ def build_py_file_inplace(py_file, compiler_options, cythonize_options):
     return build_py_file_inplace_output(
         py_file=py_file,
         status=True,
-        compiler_stdout=compiler_stdout,
-        compiler_stderr=compiler_stderr,
+        compiler_stdout=compiler_stdout_all,
+        compiler_stderr=compiler_stderr_all,
         cythonize_stdout=cythonize_stdout,
         cythonize_stderr=cythonize_stderr,
     )
@@ -264,7 +288,6 @@ def build_py_files_inplace(
     compiler_options=None,
     cythonize_options=None,
     processes=None,
-    verbose=False,
 ):
     with concurrent.futures.ProcessPoolExecutor(max_workers=processes) as executor:
         inputs = [(py_file, compiler_options, cythonize_options) for py_file in py_files]
@@ -274,16 +297,15 @@ def build_py_files_inplace(
         warning_results = []
         error_results = []
 
-        for result in results:
+        for idx, result in enumerate(results):
+            logger.info(f'{idx + 1}/{len(py_files)} obfuscated.')
+
             if not result['status']:
                 error_results.append(result)
             elif result['compiler_stderr'] or result['cythonize_stderr']:
                 warning_results.append(result)
             else:
                 perfect_results.append(result)
-
-            if verbose:
-                print(result)
 
         return perfect_results, warning_results, error_results
 
@@ -296,7 +318,7 @@ def debug():
     import iolite as io
     py_files = [io.file(f'{pywhlobf_data}/build/foo.py')]
 
-    build_py_files_inplace(py_files, verbose=True)
+    build_py_files_inplace(py_files)
 
     # ret = build_py_file_inplace(py_files[0], None, None)
     # print(ret['compiler_stdout'])
