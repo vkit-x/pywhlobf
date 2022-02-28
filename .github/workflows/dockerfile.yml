@@ -9,6 +9,7 @@ on:
       publish:
         description: 'yes/no'
         default: 'no'
+        required: false
 
 jobs:
   build:
@@ -39,6 +40,9 @@ jobs:
           # - "manylinux_2_24_aarch64"
           # - "manylinux_2_24_ppc64le"
           # - "manylinux_2_24_s390x"
+        cython3:
+          - "no"
+          - "yes"
 
     steps:
       - uses: actions/checkout@v2
@@ -50,10 +54,18 @@ jobs:
       - name: Build and push.
         run: |
           cd dockerfile
-          TAG="${{ github.event.inputs.pywhlobf_version }}-${{ matrix.platform_tag }}"
+
+          if [ "${{ matrix.cython3 }}" = 'no' ] ; then
+            TAG="${{ github.event.inputs.pywhlobf_version }}-${{ matrix.platform_tag }}"
+          elif  [ "${{ matrix.cython3 }}" = 'yes' ] ; then
+            TAG="${{ github.event.inputs.pywhlobf_version }}-cython3-${{ matrix.platform_tag }}"
+          else
+            exit 1
+
           docker build \
             --build-arg PLATFORM_TAG="${{ matrix.platform_tag }}" \
             --build-arg PYWHLOBF_PLATFORM_TAG="${{ matrix.platform_tag }}" \
+            --build-arg PYWHLOBF_CYTHON3="${{ matrix.cython3 }}" \
             --build-arg PYWHLOBF_VERSION="${{ github.event.inputs.pywhlobf_version }}" \
             -t pywhlobf/pywhlobf:"$TAG" \
             .

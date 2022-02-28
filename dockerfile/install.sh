@@ -19,5 +19,10 @@ for PYTHON_ABI in "${PYTHON_ABIS[@]}" ; do
         continue
     fi
     "$PIP_FILE" install --no-cache-dir -U pip
-    "$PIP_FILE" install --no-cache-dir pywhlobf=="$PYWHLOBF_VERSION"
+    if [ "$PYWHLOBF_CYTHON3" = 'no' ] ; then
+        "$PIP_FILE" install --no-cache-dir pywhlobf=="$PYWHLOBF_VERSION"
+    elif  [ "$PYWHLOBF_CYTHON3" = 'yes' ] ; then
+        "$PIP_FILE" install --no-cache-dir pywhlobf[cython3]=="$PYWHLOBF_VERSION"
+    else
+        exit 1
 done

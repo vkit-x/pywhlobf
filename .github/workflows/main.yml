@@ -32,6 +32,9 @@ jobs:
           - "cp37-cp37m"
           - "cp38-cp38"
           - "cp39-cp39"
+        cython3:
+          - "no"
+          - "yes"
     container:
       image: ${{ matrix.image }}
     steps:
@@ -50,7 +53,12 @@ jobs:
           pip --version
       - name: Install.
         run: |
-          pip install .
+          if [ "${{ matrix.cython3 }}" = 'no' ] ; then
+            pip install .
+          elif  [ "${{ matrix.cython3 }}" = 'yes' ] ; then
+            pip install .'[cython3]'
+          else
+            exit 1
       - name: Download example wheel file and test.
         run: |
           curl \
