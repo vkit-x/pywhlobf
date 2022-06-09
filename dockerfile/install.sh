@@ -4,11 +4,12 @@ trap "echo 'error: Script failed: see failed command above'" ERR
 
 declare -a PYTHON_ABIS=(
     # EOL.
-    cp35-cp35m
-    cp36-cp36m
+    # cp35-cp35m
+    # cp36-cp36m
     cp37-cp37m
     cp38-cp38
     cp39-cp39
+    cp310-cp310
 )
 
 for PYTHON_ABI in "${PYTHON_ABIS[@]}" ; do
