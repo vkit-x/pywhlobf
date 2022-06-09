@@ -1,11 +1,9 @@
 import sys
 from itertools import chain
 import pathlib
+from distutils.util import get_platform
 
-from wheel.bdist_wheel import (
-    get_abi_tag,
-    get_platform as get_platform_tag,
-)
+from wheel.bdist_wheel import get_abi_tag
 from wheel.wheelfile import WheelFile
 
 
@@ -54,7 +52,12 @@ def generate_whl_name(
 ):
     python_tag = 'cp' + ''.join(map(str, sys.version_info[:2]))
     abi_tag = abi_tag or get_abi_tag()
-    platform_tag = platform_tag or get_platform_tag(input_folder)
+    platform_tag = platform_tag or get_platform()
+
+    if platform_tag.startswith('linux-'):
+        # Patch the invalid platform tag.
+        platform_tag_suffix = platform_tag[len('linux-'):]
+        platform_tag = 'linux_' + platform_tag_suffix
 
     components = [distribution, version]
     if build_tag:
