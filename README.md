@@ -12,29 +12,29 @@ pywhlobf obfuscates your wheel distribution by compiling python source file to s
 
 Following images are based on [pypa/manylinux](https://github.com/pypa/manylinux) platforms, with the tagging format as `<pywhlobf_version>-<platform_tag>`. The full list can be found in [pywhlobf/tags](https://hub.docker.com/r/pywhlobf/pywhlobf/tags). If you want to obfuscate a wheel to support a different target platform, i.e. macOS or Windows platform, you should install `pywhlobf` from PyPI in the target platform and execute manually, as described in the next section.
 
-* `pywhlobf/pywhlobf:0.2.4-manylinux1_x86_64`
-* `pywhlobf/pywhlobf:0.2.4-manylinux1_i686`
-* `pywhlobf/pywhlobf:0.2.4-manylinux2010_x86_64`
-* `pywhlobf/pywhlobf:0.2.4-manylinux2010_i686`
-* `pywhlobf/pywhlobf:0.2.4-manylinux2014_x86_64`
-* `pywhlobf/pywhlobf:0.2.4-manylinux2014_i686`
-* `pywhlobf/pywhlobf:0.2.4-manylinux_2_24_x86_64`
-* `pywhlobf/pywhlobf:0.2.4-manylinux_2_24_i686`
+* `pywhlobf/pywhlobf:0.2.5-manylinux1_x86_64`
+* `pywhlobf/pywhlobf:0.2.5-manylinux1_i686`
+* `pywhlobf/pywhlobf:0.2.5-manylinux2010_x86_64`
+* `pywhlobf/pywhlobf:0.2.5-manylinux2010_i686`
+* `pywhlobf/pywhlobf:0.2.5-manylinux2014_x86_64`
+* `pywhlobf/pywhlobf:0.2.5-manylinux2014_i686`
+* `pywhlobf/pywhlobf:0.2.5-manylinux_2_24_x86_64`
+* `pywhlobf/pywhlobf:0.2.5-manylinux_2_24_i686`
 
 We also provide builds based on Cython 3.0 prerelease version:
 
-* `pywhlobf/pywhlobf:0.2.4-cython3-manylinux1_x86_64`
-* `pywhlobf/pywhlobf:0.2.4-cython3-manylinux1_i686`
-* `pywhlobf/pywhlobf:0.2.4-cython3-manylinux2010_x86_64`
-* `pywhlobf/pywhlobf:0.2.4-cython3-manylinux2010_i686`
-* `pywhlobf/pywhlobf:0.2.4-cython3-manylinux2014_x86_64`
-* `pywhlobf/pywhlobf:0.2.4-cython3-manylinux2014_i686`
-* `pywhlobf/pywhlobf:0.2.4-cython3-manylinux_2_24_x86_64`
-* `pywhlobf/pywhlobf:0.2.4-cython3-manylinux_2_24_i686`
+* `pywhlobf/pywhlobf:0.2.5-cython3-manylinux1_x86_64`
+* `pywhlobf/pywhlobf:0.2.5-cython3-manylinux1_i686`
+* `pywhlobf/pywhlobf:0.2.5-cython3-manylinux2010_x86_64`
+* `pywhlobf/pywhlobf:0.2.5-cython3-manylinux2010_i686`
+* `pywhlobf/pywhlobf:0.2.5-cython3-manylinux2014_x86_64`
+* `pywhlobf/pywhlobf:0.2.5-cython3-manylinux2014_i686`
+* `pywhlobf/pywhlobf:0.2.5-cython3-manylinux_2_24_x86_64`
+* `pywhlobf/pywhlobf:0.2.5-cython3-manylinux_2_24_i686`
 
 To properly run the docker container, user should provide the following arguments to the `docker run` command:
 
-* `-e PYTHON_ABI_TAG=<some_tag>`: required. Indicating the supported Python & ABI tag. Should be one of `cp36-cp36m`, `cp37-cp37m`, `cp38-cp38`, `cp39-cp39`, `cp310-cp310`.
+* `-e PYTHON_ABI_TAG=<some_tag>`: required. Indicating the supported Python & ABI tag. Should be one of `cp37-cp37m`, `cp38-cp38`, `cp39-cp39`, `cp310-cp310`.
 * `--user "$(id -u):$(id -g)"`: required. This field will be used by [boxboat/fixuid](https://github.com/boxboat/fixuid) to make sure the permission of output files are correct.
 * `--rm -it`: optional but recommended. This options make sure the container is deleted on exit.
 
@@ -45,13 +45,13 @@ Example of usage:
 docker run \
   --rm -it \
   --user "$(id -u):$(id -g)" \
-  -e PYTHON_ABI_TAG=cp36-cp36m \
-  pywhlobf/pywhlobf:0.2.4-manylinux2014_x86_64 \
+  -e PYTHON_ABI_TAG=cp37-cp37m \
+  pywhlobf/pywhlobf:0.2.5-manylinux2014_x86_64 \
   --help
 
 << OUTPUT
 export HOME="/home/pywhlobf"
-PYWHLOBF=/opt/python/cp36-cp36m/bin/pywhlobf
+PYWHLOBF=/opt/python/cp37-cp37m/bin/pywhlobf
 NAME
     pywhlobf
 
@@ -106,15 +106,15 @@ curl \
 docker run \
   --rm -it \
   --user "$(id -u):$(id -g)" \
-  -e PYTHON_ABI_TAG=cp36-cp36m \
+  -e PYTHON_ABI_TAG=cp37-cp37m \
   -v "$(pwd)":/data \
-  pywhlobf/pywhlobf:0.2.4-manylinux2014_x86_64 \
+  pywhlobf/pywhlobf:0.2.5-manylinux2014_x86_64 \
   '/data/wheel-0.36.2-py2.py3-none-any.whl' \
   '/data/tmp'
 
 << OUTPUT
 export HOME="/home/pywhlobf"
-PYWHLOBF=/opt/python/cp36-cp36m/bin/pywhlobf
+PYWHLOBF=/opt/python/cp37-cp37m/bin/pywhlobf
 [INFO] Processing /data/wheel-0.36.2-py2.py3-none-any.whl...
 [INFO] input_whl=/data/wheel-0.36.2-py2.py3-none-any.whl
 [INFO] distribution=wheel, version=0.36.2, build_tag=None
@@ -139,8 +139,8 @@ PYWHLOBF=/opt/python/cp36-cp36m/bin/pywhlobf
 [INFO]   wheel/cli/convert.py
 [INFO]   wheel/cli/unpack.py
 [INFO] Repacking...
-[INFO] output_whl_name=wheel-0.36.2-cp36-cp36m-manylinux2014_x86_64.whl
-[INFO] output_whl=/data/tmp/wheel-0.36.2-cp36-cp36m-manylinux2014_x86_64.whl
+[INFO] output_whl_name=wheel-0.36.2-cp37-cp37m-manylinux2014_x86_64.whl
+[INFO] output_whl=/data/tmp/wheel-0.36.2-cp37-cp37m-manylinux2014_x86_64.whl
 [INFO] Done.
 [INFO]
 OUTPUT
@@ -151,13 +151,13 @@ cd tmp && ls -alh
 total 6416
 drwxr-xr-x  3 huntzhan  staff    96B Feb 23 14:33 .
 drwxr-xr-x  4 huntzhan  staff   128B Feb 23 14:33 ..
--rw-r--r--  1 huntzhan  staff   3.1M Feb 23 14:33 wheel-0.36.2-cp36-cp36m-manylinux2014_x86_64.whl
+-rw-r--r--  1 huntzhan  staff   3.1M Feb 23 14:33 wheel-0.36.2-cp37-cp37m-manylinux2014_x86_64.whl
 OUTPUT
 
-unzip wheel-0.36.2-cp36-cp36m-manylinux2014_x86_64.whl
+unzip wheel-0.36.2-cp37-cp37m-manylinux2014_x86_64.whl
 
 << OUTPUT
-Archive:  wheel-0.36.2-cp36-cp36m-manylinux2014_x86_64.whl
+Archive:  wheel-0.36.2-cp37-cp37m-manylinux2014_x86_64.whl
   inflating: wheel/__init__.cpython-36m-x86_64-linux-gnu.so
   inflating: wheel/__main__.cpython-36m-x86_64-linux-gnu.so
   inflating: wheel/bdist_wheel.cpython-36m-x86_64-linux-gnu.so
