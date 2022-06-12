@@ -52,12 +52,10 @@ def generate_whl_name(
 ):
     python_tag = 'cp' + ''.join(map(str, sys.version_info[:2]))
     abi_tag = abi_tag or get_abi_tag()
-    platform_tag = platform_tag or get_platform()
 
-    if platform_tag.startswith('linux-'):
-        # Patch the invalid platform tag.
-        platform_tag_suffix = platform_tag[len('linux-'):]
-        platform_tag = 'linux_' + platform_tag_suffix
+    # https://peps.python.org/pep-0425/#platform-tag
+    platform_tag = platform_tag or get_platform()
+    platform_tag = platform_tag.replace('-', '_').replace('.', '_')
 
     components = [distribution, version]
     if build_tag:
