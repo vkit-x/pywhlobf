@@ -19,7 +19,6 @@ def remove_source_files(input_folder):
             in_fd.glob('**/*.pyc'),
             # Cython.
             in_fd.glob('**/*.pyx'),
-            in_fd.glob('**/*.pyd'),
             # C/C++
             in_fd.glob('**/*.c'),
             in_fd.glob('**/*.C'),
