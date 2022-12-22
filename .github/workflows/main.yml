@@ -11,7 +11,7 @@ jobs:
   checkout:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Upload checkout
         uses: actions/upload-artifact@v1
         with:

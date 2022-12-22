@@ -45,7 +45,7 @@ jobs:
           - "yes"
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: checkout
         uses: actions/upload-artifact@v1
         with:
