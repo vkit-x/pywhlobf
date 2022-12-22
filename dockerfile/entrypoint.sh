@@ -6,7 +6,7 @@ fixuid -q
 
 if [ -z "$PYTHON_ABI_TAG" ] ; then
     echo "PYTHON_ABI_TAG not set."
-    echo "Should be one of (cp37-cp37m, cp38-cp38, cp39-cp39, cp310-cp310))."
+    echo "Should be one of (cp37-cp37m, cp38-cp38, cp39-cp39, cp310-cp310, cp311-cp311)."
     echo "Abort."
     exit 1
 fi

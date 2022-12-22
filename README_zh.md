@@ -12,31 +12,31 @@ pywhlobf 是一个 Python 代码混淆工具，输入一个 [wheel 格式分发�
 
 下列镜像基于 [pypa/manylinux](https://github.com/pypa/manylinux) 提供的基础镜像构建，镜像的标签格式为 `<pywhlobf_version>-<platform_tag>`。完整的镜像列表见 [pywhlobf/tags](https://hub.docker.com/r/pywhlobf/pywhlobf/tags)。如果您的运行环境不属于下列平台（如希望混淆后的包可以在 macOS 或 Windows 上执行），您需要在目标运行环境手动从 PyPI 安装 `pywhlobf`，具体见下一小节。
 
-* `pywhlobf/pywhlobf:0.2.3-manylinux1_x86_64`
-* `pywhlobf/pywhlobf:0.2.3-manylinux1_i686`
-* `pywhlobf/pywhlobf:0.2.3-manylinux2010_x86_64`
-* `pywhlobf/pywhlobf:0.2.3-manylinux2010_i686`
-* `pywhlobf/pywhlobf:0.2.3-manylinux2014_x86_64`
-* `pywhlobf/pywhlobf:0.2.3-manylinux2014_i686`
-* `pywhlobf/pywhlobf:0.2.3-manylinux_2_24_x86_64`
-* `pywhlobf/pywhlobf:0.2.3-manylinux_2_24_i686`
+* `pywhlobf/pywhlobf:22.1.0-manylinux1_x86_64`
+* `pywhlobf/pywhlobf:22.1.0-manylinux1_i686`
+* `pywhlobf/pywhlobf:22.1.0-manylinux2010_x86_64`
+* `pywhlobf/pywhlobf:22.1.0-manylinux2010_i686`
+* `pywhlobf/pywhlobf:22.1.0-manylinux2014_x86_64`
+* `pywhlobf/pywhlobf:22.1.0-manylinux2014_i686`
+* `pywhlobf/pywhlobf:22.1.0-manylinux_2_24_x86_64`
+* `pywhlobf/pywhlobf:22.1.0-manylinux_2_24_i686`
 
 同时我们也提供基于 Cython 3.0 prerelease 版本的镜像：
 
-* `pywhlobf/pywhlobf:0.2.3-cython3-manylinux1_x86_64`
-* `pywhlobf/pywhlobf:0.2.3-cython3-manylinux1_i686`
-* `pywhlobf/pywhlobf:0.2.3-cython3-manylinux2010_x86_64`
-* `pywhlobf/pywhlobf:0.2.3-cython3-manylinux2010_i686`
-* `pywhlobf/pywhlobf:0.2.3-cython3-manylinux2014_x86_64`
-* `pywhlobf/pywhlobf:0.2.3-cython3-manylinux2014_i686`
-* `pywhlobf/pywhlobf:0.2.3-cython3-manylinux_2_24_x86_64`
-* `pywhlobf/pywhlobf:0.2.3-cython3-manylinux_2_24_i686`
+* `pywhlobf/pywhlobf:22.1.0-cython3-manylinux1_x86_64`
+* `pywhlobf/pywhlobf:22.1.0-cython3-manylinux1_i686`
+* `pywhlobf/pywhlobf:22.1.0-cython3-manylinux2010_x86_64`
+* `pywhlobf/pywhlobf:22.1.0-cython3-manylinux2010_i686`
+* `pywhlobf/pywhlobf:22.1.0-cython3-manylinux2014_x86_64`
+* `pywhlobf/pywhlobf:22.1.0-cython3-manylinux2014_i686`
+* `pywhlobf/pywhlobf:22.1.0-cython3-manylinux_2_24_x86_64`
+* `pywhlobf/pywhlobf:22.1.0-cython3-manylinux_2_24_i686`
 
-由于某些懂得都懂的原因，在中国大陆地区从 Docker Hub 拉镜像是非常慢的。我们非常贴心地为您提供了镜像版本。为了加速，可以在拉取镜像时在镜像名前面加上 `swr.cn-east-3.myhuaweicloud.com/` 前缀，如 `docker pull swr.cn-east-3.myhuaweicloud.com/pywhlobf/pywhlobf:0.2.3-manylinux2014_x86_64`，然后执行 `docker tag swr.cn-east-3.myhuaweicloud.com/pywhlobf/pywhlobf:0.2.3-manylinux2014_x86_64 pywhlobf/pywhlobf:0.2.3-manylinux2014_x86_64`。
+由于某些懂得都懂的原因，在中国大陆地区从 Docker Hub 拉镜像是非常慢的。我们非常贴心地为您提供了镜像版本。为了加速，可以在拉取镜像时在镜像名前面加上 `swr.cn-east-3.myhuaweicloud.com/` 前缀，如 `docker pull swr.cn-east-3.myhuaweicloud.com/pywhlobf/pywhlobf:22.1.0-manylinux2014_x86_64`，然后执行 `docker tag swr.cn-east-3.myhuaweicloud.com/pywhlobf/pywhlobf:22.1.0-manylinux2014_x86_64 pywhlobf/pywhlobf:22.1.0-manylinux2014_x86_64`。
 
 为了合理使用我们提供的镜像，您需要在执行 `docker run` 时提供如下参数：
 
-* `-e PYTHON_ABI_TAG=<some_tag>`：必须提供。这个用于表示目标执行环境的 Python 版本与 ABI 标签。目前支持 `cp36-cp36m`, `cp37-cp37m`, `cp38-cp38`, `cp39-cp39`。
+* `-e PYTHON_ABI_TAG=<some_tag>`：必须提供。这个用于表示目标执行环境的 Python 版本与 ABI 标签。目前支持 `cp36-cp36m`, `cp37-cp37m`, `cp38-cp38`, `cp39-cp39`, `cp310-cp310`, `cp311-cp311`。
 * `--user "$(id -u):$(id -g)"`：必须提供。 [boxboat/fixuid](https://github.com/boxboat/fixuid) 会基于这个字段保证混淆后的文件的权限的正确性。
 * `--rm -it`：不必要但推荐使用。这个选项会保证容器会在退出后被自动删除。
 
@@ -48,7 +48,7 @@ docker run \
   --rm -it \
   --user "$(id -u):$(id -g)" \
   -e PYTHON_ABI_TAG=cp36-cp36m \
-  pywhlobf/pywhlobf:0.2.3-manylinux2014_x86_64 \
+  pywhlobf/pywhlobf:22.1.0-manylinux2014_x86_64 \
   --help
 
 << OUTPUT
@@ -110,7 +110,7 @@ docker run \
   --user "$(id -u):$(id -g)" \
   -e PYTHON_ABI_TAG=cp36-cp36m \
   -v "$(pwd)":/data \
-  pywhlobf/pywhlobf:0.2.3-manylinux2014_x86_64 \
+  pywhlobf/pywhlobf:22.1.0-manylinux2014_x86_64 \
   '/data/wheel-0.36.2-py2.py3-none-any.whl' \
   '/data/tmp'
 

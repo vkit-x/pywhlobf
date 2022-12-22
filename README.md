@@ -12,29 +12,29 @@ pywhlobf obfuscates your wheel distribution by compiling python source file to s
 
 Following images are based on [pypa/manylinux](https://github.com/pypa/manylinux) platforms, with the tagging format as `<pywhlobf_version>-<platform_tag>`. The full list can be found in [pywhlobf/tags](https://hub.docker.com/r/pywhlobf/pywhlobf/tags). If you want to obfuscate a wheel to support a different target platform, i.e. macOS or Windows platform, you should install `pywhlobf` from PyPI in the target platform and execute manually, as described in the next section.
 
-* `pywhlobf/pywhlobf:0.2.8-manylinux_2_24_x86_64`
-* `pywhlobf/pywhlobf:0.2.8-manylinux_2_24_i686`
-* `pywhlobf/pywhlobf:0.2.8-manylinux1_x86_64`
-* `pywhlobf/pywhlobf:0.2.8-manylinux1_i686`
-* `pywhlobf/pywhlobf:0.2.8-manylinux2010_x86_64`
-* `pywhlobf/pywhlobf:0.2.8-manylinux2010_i686`
-* `pywhlobf/pywhlobf:0.2.8-manylinux2014_x86_64`
-* `pywhlobf/pywhlobf:0.2.8-manylinux2014_i686`
+* `pywhlobf/pywhlobf:22.1.0-manylinux_2_24_x86_64`
+* `pywhlobf/pywhlobf:22.1.0-manylinux_2_24_i686`
+* `pywhlobf/pywhlobf:22.1.0-manylinux1_x86_64`
+* `pywhlobf/pywhlobf:22.1.0-manylinux1_i686`
+* `pywhlobf/pywhlobf:22.1.0-manylinux2010_x86_64`
+* `pywhlobf/pywhlobf:22.1.0-manylinux2010_i686`
+* `pywhlobf/pywhlobf:22.1.0-manylinux2014_x86_64`
+* `pywhlobf/pywhlobf:22.1.0-manylinux2014_i686`
 
 We also provide builds based on Cython 3.0 prerelease version:
 
-* `pywhlobf/pywhlobf:0.2.8-cython3-manylinux_2_24_x86_64`
-* `pywhlobf/pywhlobf:0.2.8-cython3-manylinux_2_24_i686`
-* `pywhlobf/pywhlobf:0.2.8-cython3-manylinux1_x86_64`
-* `pywhlobf/pywhlobf:0.2.8-cython3-manylinux1_i686`
-* `pywhlobf/pywhlobf:0.2.8-cython3-manylinux2010_x86_64`
-* `pywhlobf/pywhlobf:0.2.8-cython3-manylinux2010_i686`
-* `pywhlobf/pywhlobf:0.2.8-cython3-manylinux2014_x86_64`
-* `pywhlobf/pywhlobf:0.2.8-cython3-manylinux2014_i686`
+* `pywhlobf/pywhlobf:22.1.0-cython3-manylinux_2_24_x86_64`
+* `pywhlobf/pywhlobf:22.1.0-cython3-manylinux_2_24_i686`
+* `pywhlobf/pywhlobf:22.1.0-cython3-manylinux1_x86_64`
+* `pywhlobf/pywhlobf:22.1.0-cython3-manylinux1_i686`
+* `pywhlobf/pywhlobf:22.1.0-cython3-manylinux2010_x86_64`
+* `pywhlobf/pywhlobf:22.1.0-cython3-manylinux2010_i686`
+* `pywhlobf/pywhlobf:22.1.0-cython3-manylinux2014_x86_64`
+* `pywhlobf/pywhlobf:22.1.0-cython3-manylinux2014_i686`
 
 To properly run the docker container, user should provide the following arguments to the `docker run` command:
 
-* `-e PYTHON_ABI_TAG=<some_tag>`: required. Indicating the supported Python & ABI tag. Should be one of `cp37-cp37m`, `cp38-cp38`, `cp39-cp39`, `cp310-cp310`.
+* `-e PYTHON_ABI_TAG=<some_tag>`: required. Indicating the supported Python & ABI tag. Should be one of `cp37-cp37m`, `cp38-cp38`, `cp39-cp39`, `cp310-cp310`, `cp311-cp311`.
 * `--user "$(id -u):$(id -g)"`: required. This field will be used by [boxboat/fixuid](https://github.com/boxboat/fixuid) to make sure the permission of output files are correct.
 * `--rm -it`: optional but recommended. This options make sure the container is deleted on exit.
 
@@ -46,7 +46,7 @@ docker run \
   --rm -it \
   --user "$(id -u):$(id -g)" \
   -e PYTHON_ABI_TAG=cp37-cp37m \
-  pywhlobf/pywhlobf:0.2.8-manylinux2014_x86_64 \
+  pywhlobf/pywhlobf:22.1.0-manylinux2014_x86_64 \
   --help
 
 << OUTPUT
@@ -108,7 +108,7 @@ docker run \
   --user "$(id -u):$(id -g)" \
   -e PYTHON_ABI_TAG=cp37-cp37m \
   -v "$(pwd)":/data \
-  pywhlobf/pywhlobf:0.2.8-manylinux2014_x86_64 \
+  pywhlobf/pywhlobf:22.1.0-manylinux2014_x86_64 \
   '/data/wheel-0.36.2-py2.py3-none-any.whl' \
   '/data/tmp'
 
