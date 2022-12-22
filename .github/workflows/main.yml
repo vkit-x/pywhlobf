@@ -24,14 +24,16 @@ jobs:
     strategy:
       matrix:
         image:
-          - "quay.io/pypa/manylinux2014_x86_64"
           - "quay.io/pypa/manylinux2014_i686"
+          - "quay.io/pypa/manylinux2014_x86_64"
+          - "quay.io/pypa/manylinux_2_24_x86_64"
         python_abi:
           # Support versions: https://devguide.python.org/#status-of-python-branches
           - "cp37-cp37m"
           - "cp38-cp38"
           - "cp39-cp39"
           - "cp310-cp310"
+          - "cp311-cp311"
         cython3:
           - "no"
           - "yes"
